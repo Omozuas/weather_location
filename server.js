@@ -67,7 +67,7 @@ app.get('/api/get-temprature', async (req, res) => {
     }
     
 });
-app.get("/weather", (req, res) => {
+app.get("/", (req, res) => {
     res.send("hello from weather app",);});
 app.listen(process.env.PORT, () => {
     console.log(`Server running on http://localhost:${process.env.PORT}`);
