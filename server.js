@@ -19,37 +19,28 @@ cron.schedule("*/3 * * * * ", async () => {
     }
   });
 
-// Set the view engine to EJS
-app.set("view engine", "ejs");
 
-// Serve the public folder as static files
-app.use(express.static("public"));
-
-
-app.get("/", (req, res) => {
-  res.render("index", { weather: null, error: null ,greeting:null,clientIp:null});
-});
-app.get("/weather", (req, res) => {
-    res.send("hello from weather app",);});
 
 app.set('trust proxy', true);
 
 app.get('/api/get-temprature', async (req, res) => {
-    const visitorName = req.query.visitor_name ;
-    const location1 = req.query.location;
+    const visitorName = req.query.visitor_name ||"Guest";
    let clientIp ;
     let error = null;
     let greeting;
     let weather
+    let location
     if(!visitorName){
         error = 'Failed to fetch weather data'
     }
 
     try {
-       
+        const locationResponse = await axios.get(`http://ip-api.com/json/${req.ip}`);
+        location = locationResponse.data.city;
+     
         const weatherResponse = await axios.get(`https://api.openweathermap.org/data/2.5/weather?id=2172797`, {
             params: {
-                q: location1,
+                q: location,
                 units: 'metric',
                 appid:process.env.OPENWEATHERMAP_API_KEY
             }
@@ -57,25 +48,27 @@ app.get('/api/get-temprature', async (req, res) => {
         weather=weatherResponse.data
 
         const temperature = weatherResponse.data.main.temp;
-        const location = weatherResponse.data.name;
 
        greeting = `Hello, ${visitorName}!, the temperature is ${temperature} degrees Celsius in ${location}`;
-       clientIp=`your ip address is ${req.ip}`
+       clientIp=`your ip address is ${req.ip}`;
+       res.json({
+       "location":location,
+      "greeting":  greeting,
+      "client_ip":clientIp,
+    });
        
     } catch (error) {
         console.error(error);
-        weather=null
-        greeting=null
-        error = 'Failed to fetch weather data'
+        res.json({
+            error :'Failed to fetch weather data'
+         });
+       
       
     }
-    res.render("index",{
-        weather,
-        greeting,
-        error,
-        clientIp,
-    });
+    
 });
+app.get("/weather", (req, res) => {
+    res.send("hello from weather app",);});
 app.listen(process.env.PORT, () => {
     console.log(`Server running on http://localhost:${process.env.PORT}`);
 });
