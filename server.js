@@ -12,7 +12,7 @@ cron.schedule("*/3 * * * * ", async () => {
       const currentTime = new Date();
       console.log(`Current time: ${currentTime}`);
       
-      const response = await axios.get('https://weather-location-ea5a.onrender.com/weather');
+      const response = await axios.get('https://weather-location-ea5a.onrender.com/');
       console.log('API Response:', response.data);
     } catch (error) {
       console.error('Error fetching API:', error);
@@ -23,7 +23,7 @@ cron.schedule("*/3 * * * * ", async () => {
 
 app.set('trust proxy', true);
 
-app.get('/api/get-temprature', async (req, res) => {
+app.get('/api/get-temprature-location', async (req, res) => {
     const visitorName = req.query.visitor_name ||"Guest";
    let clientIp ;
     let error = null;
