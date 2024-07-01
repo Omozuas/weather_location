@@ -2,11 +2,22 @@
 const express = require('express');
 const axios = require('axios');
 const app = express();
-const port = process.env.PORT || 3000;
-const dotenv = require('dotenv');
+const dotenv = require('dotenv').config()
+const cron = require("node-cron");
 
-dotenv.config();
 
+
+// cron.schedule("*/3 * * * * ", async () => {
+//     try {
+//       const currentTime = new Date();
+//       console.log(`Current time: ${currentTime}`);
+      
+//       const response = await axios.get('https://shope-express.onrender.com/');
+//       console.log('API Response:', response.data);
+//     } catch (error) {
+//       console.error('Error fetching API:', error);
+//     }
+//   });
 
 // Set the view engine to EJS
 app.set("view engine", "ejs");
@@ -18,6 +29,8 @@ app.use(express.static("public"));
 app.get("/", (req, res) => {
   res.render("index", { weather: null, error: null ,greeting:null,clientIp:null});
 });
+app.get("/weather", (req, res) => {
+    res.send("hello from weather app",);});
 // Middleware to extract client IP address
 app.set('trust proxy', true);
 
@@ -35,7 +48,7 @@ app.get('/api/hello', async (req, res) => {
             params: {
                 q: location1,
                 
-                appid: 'e039861d1849fc92419fbdea6591bc23'
+                appid:process.env.OPENWEATHERMAP_API_KEY
             }
         });
         weather=weatherResponse.data
@@ -60,7 +73,6 @@ app.get('/api/hello', async (req, res) => {
         clientIp,
     });
 });
-
-app.listen(port, () => {
-    console.log(`Server running on http://localhost:${port}`);
+app.listen(process.env.PORT, () => {
+    console.log(`Server running on http://localhost:${process.env.PORT}`);
 });
