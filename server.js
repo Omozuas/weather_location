@@ -23,8 +23,8 @@ cron.schedule("*/3 * * * * ", async () => {
 
 app.set('trust proxy', true);
 
-app.get('/api/get-temprature-location', async (req, res) => {
-    const visitorName = req.query.visitor_name ||"Guest";
+app.get('/api/hello', async (req, res) => {
+    const visitorName = req.query.visitor_name ||"Mark";
    let clientIp ;
     let error = null;
     let greeting;
